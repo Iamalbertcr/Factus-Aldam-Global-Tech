@@ -10,7 +10,6 @@ binding = "ASSETS"
 [[d1_databases]]
 binding = "DB"
 database_name = "aldam-db"
-database_id = "local-d1-db"
 
 [[r2_buckets]]
 binding = "UPLOADS"
@@ -18,7 +17,6 @@ bucket_name = "aldam-uploads"
 
 [[kv_namespaces]]
 binding = "CONFIG"
-id = "local-kv-config"
 
 [vars]
 SECRET_PATH = "/sistema"
