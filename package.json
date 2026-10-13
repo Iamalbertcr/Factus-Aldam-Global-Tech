@@ -1,0 +1,25 @@
+{
+  "name": "aldam-global-tech-sistema",
+  "version": "1.0.0",
+  "description": "Sistema de Inventario, Facturación y Proformas — ALDAM GLOBAL TECH (Técnicos en Tecnologías de la Información, Costa Rica)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "build": "tsc --noEmit",
+    "dev": "wrangler dev --local",
+    "deploy": "wrangler deploy"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260702.1",
+    "@types/node": "^20.19.43",
+    "hono": "^4.13.13",
+    "typescript": "^5.9.3",
+    "wrangler": "^3.114.17"
+  }
+}

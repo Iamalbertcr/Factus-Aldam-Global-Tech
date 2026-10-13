@@ -1,0 +1,25 @@
+name = "aldam-sistema"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = "public"
+binding = "ASSETS"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "aldam-db"
+database_id = "local-d1-db"
+
+[[r2_buckets]]
+binding = "UPLOADS"
+bucket_name = "aldam-uploads"
+
+[[kv_namespaces]]
+binding = "CONFIG"
+id = "local-kv-config"
+
+[vars]
+SECRET_PATH = "/sistema"
+TZ = "America/Costa_Rica"
