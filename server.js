@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ALDAM GLOBAL TECH - Sistema de Inventario, FacturaciÃ³n y Proformas
  * Backend ligero: Node.js + Express. Datos en un archivo JSON dentro de /data.
  *
@@ -11,24 +11,61 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { kv } = require('@vercel/kv');
+const { put, list, del, head } = require('@vercel/blob');
 
+const PORT = process.env.PORT || 3000;
+// Storage strategy: prefer Vercel KV/Blob in serverless (production) else fallback to local filesystem
+const USE_VERCELEDGE = Boolean(process.env.KV_REST_API_URL || process.env.KV_REST_API_TOKEN || process.env.BLOB_READ_WRITE_TOKEN);
+const DATA_DIR = process.env.DATA_DIR || path.join(process.cwd(), 'data');
+const UPLOADS = path.join(DATA_DIR, 'uploads');
+const BACKUPS = path.join(DATA_DIR, 'backups');
+const DB_FILE = path.join(DATA_DIR, 'db.json');
+const CFG_FILE = path.join(DATA_DIR, 'config.json');
+ (e) {}\n}
+}
 const PORT = process.env.PORT || 3000;
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
 const UPLOADS = path.join(DATA_DIR, 'uploads');
 const BACKUPS = path.join(DATA_DIR, 'backups');
 const DB_FILE = path.join(DATA_DIR, 'db.json');
 const CFG_FILE = path.join(DATA_DIR, 'config.json');
-[DATA_DIR, UPLOADS, BACKUPS].forEach(d => fs.mkdirSync(d, { recursive: true }));
+if (!USE_VERCELEDGE) {\n  try { [DATA_DIR, UPLOADS, BACKUPS].forEach(d => fs.mkdirSync(d, { recursive: true })); } catch (e) {}\n})); } catch (e) {}\n})); } catch (e) {}\n}
+}
 
 /* ---------- ConfiguraciÃ³n (URL secreta) ---------- */
 function normPath(p) { return '/' + String(p || '').trim().replace(/^\/+|\/+$/g, ''); }
 let config;
-if (fs.existsSync(CFG_FILE)) config = JSON.parse(fs.readFileSync(CFG_FILE, 'utf8'));
-else {
-  config = { secretPath: normPath(process.env.SECRET_PATH || '/sistema') };
-  fs.writeFileSync(CFG_FILE, JSON.stringify(config, null, 2));
+async function loadConfig() {
+  if (USE_VERCELEDGE) {
+    const cached = await kv.get('config');
+    if (cached) return cached;
+    const cfg = { secretPath: normPath(process.env.SECRET_PATH || '/sistema') };
+    await kv.set('config', cfg);
+    return cfg;
+  }
+  if (fs.existsSync(CFG_FILE)) config = JSON.parse(fs.readFileSync(CFG_FILE, 'utf8'));
+  else {
+    config = { secretPath: normPath(process.env.SECRET_PATH || '/sistema') };
+    fs.writeFileSync(CFG_FILE, JSON.stringify(config, null, 2));
+  }
+  return config;
 }
-const getBase = () => normPath(config.secretPath);
+async function saveConfig(cfg) {
+  if (USE_VERCELEDGE) {
+    await kv.set('config', cfg);
+    return;
+  }
+  fs.writeFileSync(CFG_FILE, JSON.stringify(cfg, null, 2));
+  config = cfg;
+}
+let getBaseCached = null;
+async function getBase() {
+  if (getBaseCached) return getBaseCached;
+  const cfg = await loadConfig();
+  getBaseCached = normPath(cfg.secretPath);
+  return getBaseCached;
+}
 
 /* ---------- Base de datos JSON ---------- */
 const uid = () => crypto.randomBytes(6).toString('hex');
@@ -410,3 +447,29 @@ process.on('SIGTERM', () => { flush(); process.exit(); });
 // app.listen(PORT, () => console.log(`ALDAM sistema listo: http://localhost:${PORT}${getBase()}/`));
 
 module.exports = app;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
