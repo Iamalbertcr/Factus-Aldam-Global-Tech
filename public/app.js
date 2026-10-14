@@ -18,7 +18,8 @@ const fmt = n => (S.settings.currency === 'USD' ? '$' : 'â‚¡') + num(n).toLo
 const PAY = ['Efectivo', 'SINPE MÃ³vil', 'Transferencia', 'Tarjeta', 'Cheque', 'CrÃ©dito'];
 
 async function api(method, url, body) {
-  const r = await fetch('/api/' + url, { method, headers: { 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
+  const base = (window.S && window.S.base) ? String(window.S.base).replace(/\/$/, '') : '';
+  const r = await fetch((base ? base + '/' : '') + 'api/' + url, { method, headers: { 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
   const j = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(j.error || 'Error de servidor');
   return j;
@@ -532,4 +533,7 @@ function restore(input) {
 
 /* =============== Inicio =============== */
 (async () => { try { await load(); render(); setInterval(poll, 4000); } catch (e) { $('#view').innerHTML = '<div class="card p-6">No se pudo conectar con el servidor.</div>'; } })();
+
+
+
 
